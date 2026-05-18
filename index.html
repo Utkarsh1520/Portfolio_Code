@@ -34,16 +34,71 @@
     </button>
   </header>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-overlay">
-      <h1>Directed by Utkarsh Prakash</h1>
-      <h2>
-          A Product Growth Designer shaping systems
-          that scale, adapt, and convert.
-      </h2>
+<section class="hero">
+
+  <div class="hero-overlay">
+
+    <!-- HERO TEXT -->
+
+    <h1>
+      Directed by Utkarsh Prakash
+    </h1>
+
+    <h2>
+
+      A Product Growth Designer shaping systems that
+
+      <span
+        id="dynamic-word"
+        class="dynamic-word"
+        aria-live="polite"
+      >
+        SCALE
+      </span>
+
+    </h2>
+
+    <!-- =========================================
+         ACHIEVEMENT CALLOUTS
+    ========================================== -->
+
+    <!-- LEFT CALLOUT -->
+
+    <div
+      class="achievement-callout left-callout"
+      aria-label="Designed systems impacting 100 plus users and multiple teams"
+    >
+
+      <span class="callout-arrow"></span>
+
+      <p>
+        Designed systems impacting
+        <strong>100+ users</strong>
+        & 3–4 multiple teams
+      </p>
+
     </div>
-  </section>
+
+    <!-- RIGHT CALLOUT -->
+
+    <div
+      class="achievement-callout right-callout"
+      aria-label="Increased user activation across multi-step flows"
+    >
+
+      <span class="callout-arrow"></span>
+
+      <p>
+        Increased user activation
+        by <strong>5%</strong>
+        across multi-step flows
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
 
   <!-- SCROLL CUE -->
   <div class="scroll-cue" aria-hidden="true">
@@ -601,6 +656,126 @@
 ></div>
 
   <script>
+/* =========================================
+   DYNAMIC HERO WORDS
+========================================= */
+
+const words = [
+
+  "SCALE",
+  "ADAPT",
+  "CONVERT"
+
+];
+
+/* =========================================
+   TARGET ELEMENT
+========================================= */
+
+const dynamicWord =
+  document.getElementById(
+    "dynamic-word"
+  );
+
+/* =========================================
+   CURRENT INDEX
+========================================= */
+
+let currentIndex = 0;
+
+/* =========================================
+   UPDATE WORD
+========================================= */
+
+function changeWord() {
+
+  // EXIT ANIMATION
+
+  dynamicWord.classList.add(
+    "fade-out"
+  );
+
+  setTimeout(() => {
+
+    // UPDATE INDEX
+
+    currentIndex =
+      (currentIndex + 1) % words.length;
+
+    // UPDATE TEXT
+
+    dynamicWord.textContent =
+      words[currentIndex];
+
+    // REMOVE EXIT
+
+    dynamicWord.classList.remove(
+      "fade-out"
+    );
+
+    // ENTRY ANIMATION
+
+    dynamicWord.classList.add(
+      "fade-in"
+    );
+
+    // CLEANUP
+
+    setTimeout(() => {
+
+      dynamicWord.classList.remove(
+        "fade-in"
+      );
+
+    }, 500);
+
+  }, 500);
+
+}
+
+/* =========================================
+   LOOP
+========================================= */
+
+setInterval(() => {
+
+  changeWord();
+
+}, 2000);
+
+/* =========================================
+   HERO ACHIEVEMENT CALLOUTS
+========================================= */
+
+const achievementCallouts =
+  document.querySelectorAll(
+    ".achievement-callout"
+  );
+
+/* =========================================
+   REVEAL ANIMATION
+========================================= */
+
+window.addEventListener(
+  "load",
+  () => {
+
+    achievementCallouts.forEach(
+      (callout, index) => {
+
+        setTimeout(() => {
+
+          callout.classList.add(
+            "show"
+          );
+
+        }, index * 400);
+
+      }
+    );
+
+  }
+);
 
     /* =========================================
    TOOL SCROLLER
