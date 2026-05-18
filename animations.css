@@ -1,0 +1,168 @@
+/* ============================================================
+   animations.css — Minimal Scroll & Interaction Animations
+   Utkarsh Prakash Portfolio
+   ============================================================ */
+
+/* ── Scroll reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.48s cubic-bezier(0.22,1,0.36,1),
+              transform 0.48s cubic-bezier(0.22,1,0.36,1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger for sibling groups */
+.reveal-group > .reveal:nth-child(1) { transition-delay: 0.00s; }
+.reveal-group > .reveal:nth-child(2) { transition-delay: 0.06s; }
+.reveal-group > .reveal:nth-child(3) { transition-delay: 0.12s; }
+.reveal-group > .reveal:nth-child(4) { transition-delay: 0.18s; }
+.reveal-group > .reveal:nth-child(5) { transition-delay: 0.24s; }
+.reveal-group > .reveal:nth-child(6) { transition-delay: 0.30s; }
+.reveal-group > .reveal:nth-child(7) { transition-delay: 0.36s; }
+.reveal-group > .reveal:nth-child(8) { transition-delay: 0.40s; }
+.reveal-group > .reveal:nth-child(9) { transition-delay: 0.44s; }
+.reveal-group > .reveal:nth-child(10){ transition-delay: 0.48s; }
+
+/* ── Page fade-up on switch ── */
+@keyframes pageFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page.active .page-inner {
+  animation: pageFadeUp 0.28s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+/* ── Scroll progress bar ── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: #f97316;
+  width: 0%;
+  z-index: 9999;
+  pointer-events: none;
+  transition: width 0.06s linear;
+}
+
+/* ── Card hover lifts — minimal 2px ── */
+.case-card {
+  transition: transform 0.2s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.2s cubic-bezier(0.22,1,0.36,1);
+}
+.case-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(0,0,0,0.15);
+}
+.case-card:hover .arrow-circle {
+  background: rgba(255,255,255,0.28);
+}
+.arrow-circle { transition: background 0.15s; }
+
+.pillar-card {
+  transition: transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s;
+}
+.pillar-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+}
+
+.philo-card {
+  transition: transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s;
+}
+.philo-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+}
+
+.mention-card {
+  transition: transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s;
+}
+.mention-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.09);
+}
+
+.connect-card {
+  transition: transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s;
+}
+.connect-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+}
+
+.exp-card {
+  transition: transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s;
+}
+.exp-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+}
+
+.artefact-card {
+  transition: transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s;
+}
+.artefact-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.09);
+}
+
+/* ── Tool icon subtle bounce ── */
+.tool-icon-wrap {
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  display: inline-flex;
+}
+.tool-icon-wrap:hover { transform: translateY(-3px) scale(1.08); }
+
+/* ── Beyond photos ── */
+.beyond-photo {
+  transition: transform 0.2s cubic-bezier(0.22,1,0.36,1);
+  overflow: hidden;
+}
+.beyond-photo:hover { transform: scale(1.04); }
+
+/* ── Nav pills ── */
+.nav-btn {
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+/* ── Theme toggle knob ── */
+.toggle-knob {
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.theme-toggle { transition: background 0.25s ease; }
+
+/* ── Global theme transition ── */
+body,
+.sidebar,
+.main,
+.pillar-card,
+.philo-card,
+.mention-card,
+.connect-card,
+.exp-card,
+.expertise-card,
+.artefact-card,
+.hero-banner,
+.dark-about-card,
+.tool-icon-wrap {
+  transition: background-color 0.28s ease,
+              border-color 0.28s ease,
+              color 0.28s ease;
+}
+
+/* ── Profile photo hover ring ── */
+.profile-photo { transition: box-shadow 0.18s ease; }
+.profile-photo:hover { box-shadow: 0 0 0 3px rgba(249,115,22,0.3); }
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
