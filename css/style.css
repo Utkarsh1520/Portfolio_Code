@@ -225,7 +225,7 @@ img{
 .hero{
   position:relative;
   /* svh = "small viewport height" — avoids the mobile browser-chrome bug */
-  min-height:100svh;
+  min-height:90vh;
   background:url("../assets/images/heroImg.png") center/contain no-repeat;
   display:flex;
   align-items:flex-start;
@@ -355,11 +355,11 @@ img{
 
 section{
   /* Mobile: vertical breathing room, tight horizontal margin */
-  padding:var(--space-xl) var(--page-x);
+  padding:var(--space-md) var(--page-x);
 }
 
 /* lg+: full cinematic spacing */
-@media(min-width:64rem){
+@media(min-width:24rem){
   section{
     padding:var(--space-sm) 5rem;
   }
@@ -484,7 +484,7 @@ section{
 }
 
 .philosophy-fade-in-show{
-  margin-top:var(--space-xl);
+  margin-top:var(--space-lg);
 }
 
 
@@ -793,7 +793,7 @@ section{
   position:relative;
   width:100%;
   max-width:100%;
-  margin-top:var(--space-sm);
+  margin-top:var(--space-md);
   opacity:0;
   transform:translateY(20px);
   transition:opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
@@ -801,6 +801,12 @@ section{
 
 .achievement-callout p{
   font-size: 16px;
+}
+
+@media screen and (min-width: 375px) {
+  .achievement-callout p{
+    font-size: 16px;
+  }
 }
 
 .achievement-callout.show{
@@ -823,7 +829,7 @@ section{
   }
 
   .left-callout{
-    top:-28%;
+    top:148%;
     left:76%;
   }
 
@@ -993,7 +999,7 @@ section{
   gap:var(--space-xs);
 }
 
-@media(min-width:30rem){
+@media(min-width:20rem){
   .gallery-grid{
     grid-template-columns:repeat(2,1fr);
   }
