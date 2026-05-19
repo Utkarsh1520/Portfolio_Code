@@ -29,7 +29,7 @@
   --space-3xl:  8rem;        /* 128px */
 
   /* Horizontal page padding — grows with viewport */
-  --page-x:     0.5rem;     /* mobile  → 20px */
+  --page-x:     1.25rem;    /* mobile → 20px; prevents content kissing screen edges */
 
   /* Colours */
   --clr-bg:         #090909;
@@ -124,6 +124,12 @@ img{
 
 @media(min-width:48rem){
   .navbar{
+    padding:var(--space-sm) 2rem;
+  }
+}
+
+@media(min-width:64rem){
+  .navbar{
     padding:var(--space-sm) var(--space-lg);
   }
 }
@@ -147,6 +153,8 @@ img{
   border-radius:var(--radius-md);
   border:1px solid var(--clr-border);
   min-width:10rem;
+  /* Ensure dropdown floats above all section content on mobile */
+  z-index:999;
 }
 
 .nav-links.active{
@@ -225,10 +233,12 @@ img{
 .hero{
   position:relative;
   /* svh = "small viewport height" — avoids the mobile browser-chrome bug */
-  min-height:76vh;
+  /* 100svh excludes mobile browser chrome so hero truly fills the screen */
+  min-height:100svh;
   background:url("../assets/images/heroImg.png") center/contain no-repeat;
   display:flex;
-  align-items:flex-start;
+  /* flex-end keeps overlay text anchored at the bottom of the hero image */
+  align-items:flex-end;
   justify-content:center;
   overflow:hidden;
 }
@@ -241,11 +251,19 @@ img{
   align-items:center;
   justify-content:center;
   text-align:center;
-  /* Mobile: top pad clears navbar; bottom lifts content above edge */
-  padding:calc(var(--nav-h) + var(--space-sm)) var(--page-x) var(--space-sm);
+  /* Mobile: top clears the fixed navbar; generous bottom so text isn't
+     flush against the viewport edge on small screens */
+  padding:calc(var(--nav-h) + var(--space-md)) var(--page-x) var(--space-xl);
 }
 
-@media(min-width:48rem){
+/* Tablet: intermediate breathing room */
+@media(min-width:48rem) and (max-width:63.99rem){
+  .hero-overlay{
+    padding:var(--space-2xl) 2.5rem var(--space-2xl);
+  }
+}
+
+@media(min-width:64rem){
   .hero-overlay{
     padding:var(--space-3xl) var(--space-lg) var(--space-2xl);
   }
@@ -359,9 +377,16 @@ section{
 }
 
 /* lg+: full cinematic spacing */
-@media(min-width:24rem){
+@media(min-width:64rem){
   section{
-    padding:var(--space-md) 2rem;
+    padding:var(--space-3xl) 5rem;
+  }
+}
+
+/* md (tablet): intermediate comfortable padding */
+@media(min-width:48rem) and (max-width:63.99rem){
+  section{
+    padding:var(--space-2xl) 2.5rem;
   }
 }
 
@@ -399,6 +424,13 @@ section{
   align-items:center;
 }
 
+/* Tablet: still single-column but with extra gap for breathing room */
+@media(min-width:48rem) and (max-width:63.99rem){
+  .intro-content{
+    gap:var(--space-xl);
+  }
+}
+
 @media(min-width:64rem){
   .intro-content{
     grid-template-columns:1fr 2fr;
@@ -432,12 +464,21 @@ section{
   gap:var(--space-sm);
 }
 
+/* sm: 2 columns on wider phones */
 @media(min-width:30rem){
   .philosophy-grid{
     grid-template-columns:repeat(2,1fr);
   }
 }
 
+/* md (tablet): 3 columns — avoids the jarring 2→4 jump */
+@media(min-width:48rem){
+  .philosophy-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+
+/* lg+: full 4-column desktop layout */
 @media(min-width:64rem){
   .philosophy-grid{
     grid-template-columns:repeat(4,1fr);
@@ -581,14 +622,20 @@ section{
 .systems-section{
   position:relative;
   overflow:hidden;
-  /* Mobile: inherits from section; only override at lg+ */
-  padding:var(--space-2xl) var(--page-x);
+  /* Mobile: generous but not overwhelming vertical breathing room */
+  padding:var(--space-xl) var(--page-x);
   background:radial-gradient(
     circle at top,
     rgba(35,55,110,0.25),
     #050505 45%
   );
   color:var(--clr-text);
+}
+
+@media(min-width:48rem) and (max-width:63.99rem){
+  .systems-section{
+    padding:var(--space-2xl) 2.5rem;
+  }
 }
 
 @media(min-width:64rem){
@@ -779,7 +826,8 @@ section{
 .achievement-callout{
   display:flex;
   align-items:center;
-  justify-content: center;
+  /* Mobile: flex-start keeps arrow + text naturally left-aligned */
+  justify-content:flex-start;
   gap:var(--space-sm);
   padding:var(--space-sm) var(--space-md);
   border-radius:var(--radius-md);
@@ -801,14 +849,11 @@ section{
 }
 
 .achievement-callout p{
-  font-size: 16px;
-}
-
-@media screen and (min-width: 320px) {
-  .achievement-callout p{
-    font-size: 14px;
-    text-align: center !important;
-  }
+  margin:0;
+  /* Fluid font — readable on all screens, no breakpoint hacks needed */
+  font-size:clamp(0.875rem, 1.5vw, 1rem);
+  text-align:left;
+  color:rgba(255,255,255,0.92);
 }
 
 .achievement-callout.show{
@@ -816,12 +861,12 @@ section{
   transform:translateY(0);
 }
 
-/* Mobile: both callouts arrow in same direction */
+/* Mobile: both callouts arrow in the same direction */
 .right-callout{
   flex-direction:row;
 }
 
-/* lg+: restore absolute overlay layout */
+/* lg+: restore absolute overlay layout for cinematic positioning */
 @media(min-width:64rem){
   .achievement-callout{
     position:absolute;
@@ -831,7 +876,7 @@ section{
   }
 
   .left-callout{
-    top:112%;
+    top:96%;
     left:76%;
   }
 
@@ -842,16 +887,10 @@ section{
   }
 }
 
-/* Between lg and xl: pull callouts in from edges so they don't clip */
+/* Between lg and xl: prevent callouts clipping near viewport edges */
 @media(min-width:64rem) and (max-width:80rem){
   .left-callout{ left:6%; }
   .right-callout{ right:6%; }
-}
-
-.achievement-callout p{
-  margin:0;
-  text-align:left;
-  color:rgba(255,255,255,0.92);
 }
 
 /* WCAG AA: #9ec5ff on dark bg ≈ 7.7 : 1 */
@@ -945,6 +984,13 @@ section{
 @media(min-width:64rem){
   .making-container{
     grid-template-columns:1fr 1fr;
+    /* Slightly tighter gap on first desktop breakpoint; full gap at xl */
+    gap:2.5rem;
+  }
+}
+
+@media(min-width:80rem){
+  .making-container{
     gap:3.75rem;
   }
 }
@@ -975,6 +1021,10 @@ section{
 
 .making-text{
   color:var(--clr-text-muted);
+  /* min-width:0 prevents this grid cell from overflowing its column
+     on mobile — critical for the tool scroller child to stay contained */
+  min-width:0;
+  overflow:hidden;
 }
 
 .making-subsection{
@@ -1001,7 +1051,8 @@ section{
   gap:var(--space-xs);
 }
 
-@media(min-width:20rem){
+/* sm+ (wider phones): 2 columns — 30rem avoids cramped layout on tiny screens */
+@media(min-width:30rem){
   .gallery-grid{
     grid-template-columns:repeat(2,1fr);
   }
@@ -1015,8 +1066,9 @@ section{
 
 .gallery-grid img{
   width:100%;
-  /* clamp: never shorter than 10rem, scales, never taller than 17.5rem */
-  height:clamp(10rem, 20vw, 17.5rem);
+  /* Min 12rem so images never collapse to thumbnails on mobile;
+     fluid mid-range; max caps desktop height */
+  height:clamp(12rem, 28vw, 17.5rem);
   object-fit:cover;
   border-radius:var(--radius-sm);
   transition:transform var(--dur-base) var(--ease);
@@ -1034,12 +1086,19 @@ section{
 ============================================================ */
 
 .footer{
-  padding:var(--space-xl) var(--page-x);
+  /* Mobile: comfortable padding using the corrected --page-x token */
+  padding:var(--space-lg) var(--page-x);
   border-top:1px solid var(--clr-border);
   text-align:center;
 }
 
 @media(min-width:48rem){
+  .footer{
+    padding:var(--space-xl) 2.5rem;
+  }
+}
+
+@media(min-width:64rem){
   .footer{
     padding:3.75rem 5rem;
   }
@@ -1103,7 +1162,8 @@ section{
   border-radius:var(--radius-lg);
   padding:var(--space-sm);
   position:relative;
-  overflow:hidden;
+  /* overflow:hidden removed — it was clipping the scroller track on mobile.
+     The .tool-scroller-wrapper handles its own overflow clipping. */
 }
 
 @media(min-width:48rem){
@@ -1201,46 +1261,52 @@ section{
 
 /* ============================================================
    TOOL SCROLLER
-   Mobile: full viewport width (was 33rem — broke narrow screens).
-   Animation runs slower on mobile for readability.
-   lg+: constrained to 33rem within the experience card.
+   ─────────────────────────────────────────────────────────────
+   Structure: section#tool-scroller.tool-scroller-section
+              └── div.tool-scroller-wrapper
+                  └── div.tool-scroller-track
+                      └── div.tool-item (×N, duplicated for loop)
+
+   Lives inside: .making-container > .making-text (a grid cell).
+
+   Key fixes applied:
+   1. The global `section` rule adds horizontal padding — we must
+      reset it to 0 here or the track overflows on every screen.
+   2. overflow:hidden must be on .tool-scroller-section so the
+      ::before/::after fade masks clip correctly (they are
+      position:absolute children of the section).
+   3. .making-text gets min-width:0 + overflow:hidden (above) so
+      the grid cell never grows wider than its column.
+   4. .tool-scroller-wrapper clips the track independently so the
+      animation viewport is separate from the mask viewport.
+   5. width:max-content on the track is intentional — it holds
+      the full duplicated icon set for the seamless loop. The
+      parent chain (making-text → making-container → section)
+      constrains the visible area via overflow:hidden.
 ============================================================ */
 
 .tool-scroller-section{
   position:relative;
   margin-top:0.75rem;
-  overflow:hidden;
-  max-width: 236px;
+  /* Fill .making-text exactly — never fixed width */
   width:100%;
-  padding:var(--space-sm) 0;
+  /* Reset global section padding — scroller needs edge-to-edge width */
+  padding:var(--space-sm) 0 !important;
   background:linear-gradient(180deg, var(--clr-bg), #0a0a0a);
+  /* overflow:hidden here clips the absolute fade masks correctly */
+  overflow:hidden;
 }
 
-@media(min-width:64rem){
-  .tool-scroller-section{
-    width:33rem;
-    max-width: 324px;
-  }
-}
-
-
-/* Edge fade masks — narrower on mobile to show more content */
+/* Fade masks — position:absolute, clipped by .tool-scroller-section */
 .tool-scroller-section::before,
 .tool-scroller-section::after{
   content:"";
   position:absolute;
   top:0;
   height:100%;
+  width:12%;
   z-index:3;
   pointer-events:none;
-  width:12%;
-}
-
-@media(min-width:48rem){
-  .tool-scroller-section::before,
-  .tool-scroller-section::after{
-    width:10%;
-  }
 }
 
 .tool-scroller-section::before{
@@ -1253,6 +1319,7 @@ section{
   background:linear-gradient(to left, var(--clr-bg), transparent);
 }
 
+/* Secondary clip layer — isolates track overflow from the masks */
 .tool-scroller-wrapper{
   overflow:hidden;
   width:100%;
@@ -1261,42 +1328,47 @@ section{
 .tool-scroller-track{
   display:flex;
   align-items:center;
-  gap:var(--space-sm);
+  gap:0.75rem;
+  /* max-content lets both halves of the duplicated set sit inline */
   width:max-content;
-  /* Mobile: slower scroll — more readable on small screens */
-  animation:infiniteScroll 22s linear infinite;
+  /* Mobile: slow — narrow screens show fewer icons at once */
+  animation:infiniteScroll 28s linear infinite;
+  /* Compositor-only animation — no layout reflow */
+  will-change:transform;
 }
 
 @media(min-width:48rem){
   .tool-scroller-track{
-    gap:1.375rem;
-    animation-duration:18s;
+    gap:1rem;
+    animation-duration:22s;
   }
 }
 
 @media(min-width:64rem){
   .tool-scroller-track{
-    gap:1.75rem;
-    animation-duration:14s;
+    gap:1.375rem;
+    animation-duration:16s;
   }
 }
 
+/* Accessibility: pause on hover or keyboard focus */
 .tool-scroller-track:hover,
 .tool-scroller-track:focus-within{
   animation-play-state:paused;
 }
 
-/* WCAG 2.5.5: 80×80px on mobile still exceeds 44px minimum */
+/* ─── Tool items ──────────────────────────────────────────── */
+/* All sizes exceed the 44px WCAG 2.5.5 tap-target minimum     */
 .tool-item{
   flex-shrink:0;
-  /* Mobile: slightly smaller to show more items */
-  width:5rem;
-  height:5rem;
+  /* Mobile: 3.5rem (56px) — tappable and compact */
+  width:3.5rem;
+  height:3.5rem;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:0.875rem;
-  border-radius:var(--radius-md);
+  padding:0.625rem;
+  border-radius:var(--radius-sm);
   background:rgba(255,255,255,0.03);
   border:1px solid rgba(255,255,255,0.06);
   backdrop-filter:blur(12px);
@@ -1308,6 +1380,15 @@ section{
 }
 
 @media(min-width:48rem){
+  .tool-item{
+    width:4.5rem;
+    height:4.5rem;
+    padding:0.75rem;
+    border-radius:var(--radius-md);
+  }
+}
+
+@media(min-width:64rem){
   .tool-item{
     width:5.75rem;
     height:5.75rem;
@@ -1421,7 +1502,8 @@ section{
 
 .scroll-cue{
   position:absolute;
-  bottom:10rem;
+  /* Mobile: low enough to be visible without overlapping hero content */
+  bottom:2rem;
   left:50%;
   transform:translateX(-50%);
   display:flex;
@@ -1435,7 +1517,7 @@ section{
 
 @media(min-width:48rem){
   .scroll-cue{
-    bottom:12rem;
+    bottom:3rem;
   }
 }
 
