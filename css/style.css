@@ -29,7 +29,7 @@
   --space-3xl:  8rem;        /* 128px */
 
   /* Horizontal page padding — grows with viewport */
-  --page-x:     1.25rem;     /* mobile  → 20px */
+  --page-x:     0.5rem;     /* mobile  → 20px */
 
   /* Colours */
   --clr-bg:         #090909;
@@ -225,7 +225,7 @@ img{
 .hero{
   position:relative;
   /* svh = "small viewport height" — avoids the mobile browser-chrome bug */
-  min-height:90vh;
+  min-height:84vh;
   background:url("../assets/images/heroImg.png") center/contain no-repeat;
   display:flex;
   align-items:flex-start;
@@ -803,9 +803,10 @@ section{
   font-size: 16px;
 }
 
-@media screen and (min-width: 375px) {
+@media screen and (min-width: 320px) {
   .achievement-callout p{
-    font-size: 16px;
+    font-size: 14px;
+    text-align: center !important;
   }
 }
 
@@ -835,15 +836,15 @@ section{
 
   .right-callout{
     top:86%;
-    right:72%;
+    right:76%;
     flex-direction:row-reverse;
   }
 }
 
 /* Between lg and xl: pull callouts in from edges so they don't clip */
 @media(min-width:64rem) and (max-width:80rem){
-  .left-callout{ left:2%; }
-  .right-callout{ right:2%; }
+  .left-callout{ left:6%; }
+  .right-callout{ right:6%; }
 }
 
 .achievement-callout p{
@@ -1208,7 +1209,7 @@ section{
   position:relative;
   margin-top:0.75rem;
   overflow:hidden;
-  max-width: 324px;
+  max-width: 236px;
   width:100%;
   padding:var(--space-sm) 0;
   background:linear-gradient(180deg, var(--clr-bg), #0a0a0a);
@@ -1419,7 +1420,7 @@ section{
 
 .scroll-cue{
   position:absolute;
-  bottom:1.5rem;
+  bottom:7rem;
   left:50%;
   transform:translateX(-50%);
   display:flex;
@@ -1433,7 +1434,7 @@ section{
 
 @media(min-width:48rem){
   .scroll-cue{
-    bottom:2rem;
+    bottom:9.5rem;
   }
 }
 
