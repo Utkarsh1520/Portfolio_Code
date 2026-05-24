@@ -486,18 +486,14 @@ section{
   }
 }
 
-.image2{
-   display: none;
-}
+/* Mobile: show image2 (portrait/compact variant), hide image1 */
+.image1{ display:none; }
+.image2{ display:block; }
 
-@media only screen and (max-width: 500px){
-   .image1{
-     display: none;
-   }
-
-   .image2{
-     display: block;
-   }
+/* sm+ (500px): swap — show image1 (landscape/full variant), hide image2 */
+@media(min-width:31.25rem){
+  .image1{ display:block; }
+  .image2{ display:none; }
 }
 
 
@@ -528,39 +524,22 @@ section{
   margin-top:var(--space-lg);
 }
 
-/* style.css */
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-:root {
-  --bg: #050505;
-  --card: #090909;
-  --text: #ffffff;
-  --muted: rgba(255,255,255,0.65);
+/* Work-section local tokens — scoped so they don't clash with :root */
+.work-section{
+  --card:   #090909;
+  --muted:  rgba(255,255,255,0.65);
   --border: rgba(255,255,255,0.08);
-}
-
-body {
-  font-family: "Inter", sans-serif;
-  background: #000;
-  color: var(--text);
-  min-height: 100vh;
-  padding: 60px 20px;
 }
 
 /* Section */
 
+/* Work section — let the section token control horizontal padding;
+   internal components (heading, cards) supply their own vertical rhythm */
 .work-section{
-  padding: 0px !important;
-}
-
-.work-section {
-  max-width: 1500px;
-  margin: 0 auto;
+  padding-top:32px;
+  padding-bottom:0;
+  max-width:1500px;
+  margin:0 auto;
 }
 
 .section-heading {
@@ -577,25 +556,27 @@ body {
 }
 
 .section-heading h1 {
-  font-size: clamp(3rem, 7vw, 5rem);
-  line-height: 1;
+  /* was clamp(3rem,7vw,5rem) — 3rem minimum is too large on phones */
+  font-size: clamp(1.75rem, 5vw, 3rem);
+  line-height: 1.1;
   font-weight: 800;
 }
 
 .subtitle {
-  margin-top: 18px;
+  margin-top: 14px;
   color: rgba(255,255,255,0.6);
-  font-size: 1.1rem;
+  font-size: 0.95rem;                     /* was 1.1rem */
 }
 
-/* Card */
+/* ── Card shell ─────────────────────────────────────────── */
 
 .case-study-card {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 492px;
+  /* Mobile base: single column — responsive block below overrides to 1fr 1fr */
+  grid-template-columns: 1fr;
+  /* Removed fixed min-height:492px — forces excessive height on mobile */
   overflow: hidden;
-  border-radius: 32px;
+  border-radius: 20px;                    /* was 32px — softer at smaller sizes */
   background: var(--card);
   border: 1px solid var(--border);
   position: relative;
@@ -604,7 +585,12 @@ body {
     inset 0 1px 0 rgba(255,255,255,0.03);
 }
 
-/* Left Side */
+/* Gap between multiple stacked cards */
+.case-study-card + .case-study-card {
+  margin-top: 1.5rem;
+}
+
+/* ── Left: text content ─────────────────────────────────── */
 
 .case-study-content {
   background: linear-gradient(
@@ -612,10 +598,12 @@ body {
     rgba(255,255,255,0.02),
     rgba(255,255,255,0)
   );
-  padding: 24px;
+  /* Mobile: compact padding */
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 1rem;
   position: relative;
 }
 
@@ -638,40 +626,44 @@ body {
 }
 
 .case-study-tag {
-  font-size: 0.8rem;
+  font-size: 0.7rem;                      /* was 0.8rem */
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.45);
-  margin-bottom: 28px;
+  margin-bottom: 0.875rem;                /* was 28px fixed */
 }
 
+/* Title — clamp min was 2.5rem which is too large even on desktop halves */
 .case-study-title {
-  font-size: clamp(2.5rem, 2vw, 4.5rem);
-  line-height: 1.05;
+  font-size: clamp(1.4rem, 3vw, 2.25rem);
+  line-height: 1.1;
   font-weight: 800;
-  letter-spacing: -0.04em;
-  max-width: 700px;
+  letter-spacing: -0.03em;
+  max-width: 600px;
 }
 
+/* Description — was a flat 1.3rem everywhere, oversized on all screens */
 .case-study-description {
-  margin-top: 30px;
-  max-width: 560px;
+  max-width: 520px;
   color: var(--muted);
-  font-size: 1.3rem;
-  line-height: 1.7;
+  font-size: clamp(0.875rem, 1.4vw, 1rem);
+  line-height: 1.65;
+  margin-top: 24px;                          /* gap on parent handles spacing */
 }
 
-/* Button */
+/* ── Button ─────────────────────────────────────────────── */
 
 .case-study-button {
   position: relative;
   z-index: 2;
-  width: 204px;
-  height: 90px;
+  /* Mobile: compact icon-only pill */
+  width: 8rem;
+  height: 3rem;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.12);
   color: white;
@@ -694,11 +686,13 @@ body {
   outline-offset: 4px;
 }
 
-/* Right Side */
+/* ── Right: image wrapper ───────────────────────────────── */
 
 .case-study-image-wrapper {
   position: relative;
   overflow: hidden;
+  /* Mobile: give the image a visible height */
+  min-height: 220px;
   background:
     radial-gradient(circle at center, #2f1f57 0%, #121212 80%);
 }
@@ -719,7 +713,7 @@ body {
 .case-study-image {
   width: 100%;
   height: 100%;
-  object-fit: cover ;
+  object-fit: cover;
   transition: transform 0.8s ease;
 }
 
@@ -727,54 +721,58 @@ body {
   transform: scale(1.04);
 }
 
-/* Responsive */
+/* ── Responsive breakpoints ─────────────────────────────── */
 
-@media (max-width: 1024px) {
-
-  .case-study-card {
-    grid-template-columns: 1fr;
+/* sm (480px): more padding, taller image */
+@media(min-width:30rem){
+  .case-study-content{
+    padding: 2rem;
   }
 
-  /* .case-study-content {
-    padding: 50px;
-  } */
+  .case-study-image-wrapper{
+    min-height: 280px;
+  }
 
-  .case-study-image-wrapper {
-    min-height: 420px;
+  .case-study-button{
+    width: 3.5rem;
+    height: 3.5rem;
   }
 }
 
-@media (max-width: 640px) {
-
-  /* body {
-    padding: 30px 16px;
-  } */
-
-  .section-heading {
-    margin-bottom: 40px;
+/* md (768px): comfortable padding, pill button reveals */
+@media(min-width:48rem){
+  .case-study-content{
+    padding: 2.25rem 2.5rem;
   }
 
-  .case-study-content {
-    padding: 32px 24px;
+  .case-study-image-wrapper{
+    min-height: 340px;
   }
 
-  .case-study-title {
-    font-size: 2.2rem;
+  .case-study-button{
+    width: 10rem;
+    height: 3.5rem;
+  }
+}
+
+/* lg (1024px): two-column side-by-side */
+@media(min-width:64rem){
+  .case-study-card{
+    grid-template-columns: 1fr 1fr;
+    min-height: 400px;                    /* sensible desktop height, was 492px */
   }
 
-  .case-study-description {
-    font-size: 1rem;
-    margin-top: 20px;
+  .case-study-content{
+    padding: 2.5rem 3rem;
   }
 
-  .case-study-button {
-    width: 72px;
-    height: 72px;
-    margin-top: 40px;
+  .case-study-image-wrapper{
+    min-height: unset;                    /* grid row drives height on desktop */
   }
 
-  .case-study-image-wrapper {
-    min-height: 280px;
+  .case-study-button{
+    width: 12rem;
+    height: 4rem;
   }
 }
 
@@ -1076,8 +1074,8 @@ body {
 .achievement-callout{
   display:flex;
   align-items:center;
-  /* Mobile: flex-start keeps arrow + text naturally left-aligned */
-  justify-content:center;
+  /* flex-start keeps arrow + text naturally left-aligned on mobile */
+  justify-content:flex-start;
   gap:var(--space-sm);
   padding:var(--space-sm) var(--space-md);
   border-radius:var(--radius-md);
@@ -1102,7 +1100,7 @@ body {
   margin:0;
   /* Fluid font — readable on all screens, no breakpoint hacks needed */
   font-size:clamp(0.875rem, 1.5vw, 1rem);
-  text-align:left;
+  text-align:center;
   color:rgba(255,255,255,0.92);
 }
 
@@ -1149,48 +1147,7 @@ body {
   text-shadow:0 0 10px rgba(120,170,255,0.45);
 }
 
-/* .callout-arrow{
-  position:relative;
-  width:70px;
-  height:2px;
-  flex-shrink:0;
-  background:repeating-linear-gradient(
-    to right,
-    rgba(140,180,255,0.95) 0 6px,
-    transparent 6px 12px
-  );
-  animation:arrowGlow 2.8s ease-in-out infinite;
-}
-
-.callout-arrow::after{
-  content:"";
-  position:absolute;
-  top:50%;
-  right:-4px;
-  width:10px;
-  height:10px;
-  border-top:2px solid var(--clr-accent-hi);
-  border-right:2px solid var(--clr-accent-hi);
-  transform:translateY(-50%) rotate(45deg);
-} */
-
-/* Desktop: right callout arrow points inward */
-@media(min-width:64rem){
-  .right-callout .callout-arrow{
-    transform:rotate(180deg);
-  }
-}
-
-@keyframes arrowGlow{
-  0%,100%{
-    opacity:0.5;
-    filter:drop-shadow(0 0 4px rgba(120,170,255,0.2));
-  }
-  50%{
-    opacity:1;
-    filter:drop-shadow(0 0 12px rgba(120,170,255,0.7));
-  }
-}
+/* .callout-arrow styles removed — element not currently in use */
 
 
 /* ============================================================
@@ -1227,6 +1184,7 @@ body {
 
 .making-container{
   display:grid;
+  margin-top: 32px;
   grid-template-columns:1fr;
   gap:var(--space-lg);
 }
@@ -1247,8 +1205,8 @@ body {
 
 .making-image img{
   width:100%;
-  height: 100%;
-  object-fit: cover;
+  height:auto;          /* was 100% — collapses when parent has no explicit height */
+  object-fit:cover;
   border-radius:var(--radius-md);
 }
 
@@ -1304,7 +1262,7 @@ body {
 }
 
 /* sm+ (wider phones): 2 columns — 30rem avoids cramped layout on tiny screens */
-@media(min-width:12rem){
+@media(min-width:24rem){
   .gallery-grid{
     grid-template-columns:repeat(2,1fr);
   }
@@ -1418,9 +1376,9 @@ body {
      The .tool-scroller-wrapper handles its own overflow clipping. */
 }
 
-@media(min-width:24rem){
+/* md+: more padding and gap once there's enough space */
+@media(min-width:48rem){
   .experience-card{
-    flex-direction: column;
     padding:var(--space-md);
     gap:var(--space-md);
   }
@@ -1816,14 +1774,27 @@ body {
 
 
 /* ============================================================
-   CUSTOM CURSOR
-   Uses hover/pointer media queries instead of a viewport-width
-   breakpoint — correctly targets mouse users on any screen size
-   and touch users on large tablets/desktops.
+   CUSTOM CURSOR + SPARKLE TRAIL
+   ─────────────────────────────────────────────────────────────
+   Fixes applied:
+   1. mix-blend-mode:screen removed from both cursor and sparkle.
+      On a dark (#090909) background, screen blending causes white
+      glows to become invisible — the blend result approaches the
+      background colour. Normal blending renders the glow correctly.
+   2. #custom-cursor starts opacity:0 so it doesn't flash at (0,0)
+      before JS has positioned it. JS should set opacity:1 once the
+      first mousemove fires.
+   3. .sparkle starts opacity:0 — JS sets opacity:1 when a sparkle
+      is spawned so they don't pile up visibly before being placed.
+   4. Glow box-shadow values strengthened — previous values were
+      too subtle against the dark background.
+   5. z-index hierarchy: cursor 99999, sparkles 99998 (correct —
+      cursor always above trail).
 ============================================================ */
 
-/* Mouse/pointer device: hide native cursor */
+/* Mouse/pointer device only */
 @media(hover:hover) and (pointer:fine){
+
   html,
   body,
   a,
@@ -1837,36 +1808,43 @@ body {
     position:fixed;
     top:0;
     left:0;
-    width:3rem;
-    height:3rem;
+    width:2rem;
+    height:2rem;
     border-radius:50%;
     pointer-events:none;
     z-index:99999;
+    /* Start invisible — JS sets opacity:1 on first mousemove */
+    opacity:0;
     transform:translate(-50%, -50%);
     background:radial-gradient(
       circle,
-      rgba(255,255,255,0.95) 0%,
-      rgba(180,220,255,0.8) 45%,
-      rgba(170,120,255,0.45) 75%,
-      rgba(255,255,255,0) 100%
+      rgba(255,255,255,1)    0%,
+      rgba(180,210,255,0.9) 40%,
+      rgba(160,100,255,0.5) 70%,
+      rgba(255,255,255,0)  100%
     );
+    /* Stronger glow — screen blend was hiding these on dark bg */
     box-shadow:
-      0 0 10px rgba(255,255,255,0.9),
-      0 0 25px rgba(120,180,255,0.6),
-      0 0 45px rgba(170,120,255,0.4);
-    mix-blend-mode:screen;
+      0 0  8px 2px rgba(255,255,255,0.95),
+      0 0 20px 4px rgba(140,180,255,0.8),
+      0 0 40px 8px rgba(160,100,255,0.55);
+    /* mix-blend-mode:screen REMOVED — made cursor invisible on dark bg */
     will-change:transform;
-    transition:width 0.2s var(--ease), height 0.2s var(--ease), opacity 0.3s var(--ease);
+    transition:
+      width  0.15s ease,
+      height 0.15s ease,
+      opacity 0.3s ease;
   }
 
-  a:hover ~ #custom-cursor,
+  /* Cursor shrinks slightly when hovering interactive elements */
+  a:hover  ~ #custom-cursor,
   button:hover ~ #custom-cursor{
-    width:1.75rem;
-    height:1.75rem;
+    width:1.5rem;
+    height:1.5rem;
   }
 }
 
-/* Touch device: restore native cursor, hide custom cursor elements */
+/* Touch/coarse-pointer device: restore native cursor, hide elements */
 @media(hover:none),(pointer:coarse){
   html,
   body,
@@ -1883,6 +1861,8 @@ body {
   }
 }
 
+/* ── Sparkle trail container ────────────────────────────── */
+
 #sparkle-container{
   position:fixed;
   inset:0;
@@ -1891,30 +1871,37 @@ body {
   z-index:99998;
 }
 
+/* ── Individual sparkle ─────────────────────────────────── */
+
 .sparkle{
   position:absolute;
   border-radius:50%;
   pointer-events:none;
+  /* Start invisible — JS sets opacity:1 when a sparkle is spawned */
+  opacity:0;
   transform:translate(-50%, -50%) scale(1);
-  opacity:1;
   background:radial-gradient(
     circle,
-    rgba(255,255,255,1) 0%,
-    rgba(180,220,255,0.9) 45%,
-    rgba(170,120,255,0.45) 75%,
-    rgba(255,255,255,0) 100%
+    rgba(255,255,255,1)    0%,
+    rgba(200,220,255,0.9) 40%,
+    rgba(160,100,255,0.5) 70%,
+    rgba(255,255,255,0)  100%
   );
+  /* Stronger glow — same fix as cursor; screen blend was hiding these */
   box-shadow:
-    0 0 10px rgba(255,255,255,0.9),
-    0 0 18px rgba(120,180,255,0.45),
-    0 0 28px rgba(170,120,255,0.3);
+    0 0  6px 1px rgba(255,255,255,0.95),
+    0 0 14px 3px rgba(140,180,255,0.75),
+    0 0 24px 5px rgba(160,100,255,0.45);
+  /* mix-blend-mode:screen REMOVED */
   will-change:transform, opacity;
-  transition:opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+  transition:
+    opacity   0.5s ease-out,
+    transform 0.5s ease-out;
 }
 
 .sparkle.fade-out{
   opacity:0;
-  transform:translate(-50%, -50%) scale(0.4);
+  transform:translate(-50%, -50%) scale(0.3);
 }
 
 
