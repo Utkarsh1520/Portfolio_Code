@@ -657,7 +657,7 @@ section{
   position: relative;
   z-index: 2;
   /* Mobile: compact icon-only pill */
-  width: 8rem;
+  width: 10rem;
   height: 3rem;
   border-radius: 999px;
   display: inline-flex;
