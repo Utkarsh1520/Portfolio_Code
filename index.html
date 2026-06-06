@@ -43,11 +43,46 @@
 <body>
 
   <!-- ========================================================
+       FULL-SCREEN LOADER
+  ======================================================== -->
+  <div
+    id="site-loader"
+    class="site-loader"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Loading Utkarsh Prakash portfolio"
+    aria-live="polite"
+  >
+    <div class="loader-inner">
+
+      <!-- Headline -->
+      <p class="loader-headline">Crafting thoughtful experiences...</p>
+
+      <!-- Progress bar -->
+      <div class="loader-bar-wrap" aria-hidden="true">
+        <div class="loader-bar-track">
+          <div class="loader-bar-fill" id="loader-bar-fill"></div>
+        </div>
+        <span class="loader-percent" id="loader-percent" aria-label="Loading progress">0%</span>
+      </div>
+
+    </div>
+
+    <!-- Ambient grain overlay -->
+    <div class="loader-grain" aria-hidden="true"></div>
+  </div>
+
+  <!-- ========================================================
+       SITE CONTENT — fades in after loader
+  ======================================================== -->
+  <div id="site-content">
+
+  <!-- ========================================================
        NAVBAR
   ======================================================== -->
   <header class="navbar">
 
-    <div class="logo">
+    <div class="logo" id="navbar-logo" role="button" tabindex="0" aria-label="Utkarsh Prakash — return to top and replay intro" style="cursor:pointer;">
       <img src="assets/images/myLogo.svg" alt="Utkarsh Prakash logo" width="40" height="40" />
     </div>
 
@@ -102,10 +137,9 @@
       >
         <p>
           Designed systems impacting
-          <strong>100+ users</strong> &amp; <strong>3–4</strong> multiple teams
+          <strong>100+ users</strong> &amp <strong>3–4</strong> multiple cleint teams
         </p>
       </div>
-
       <!-- Right callout -->
       <div
         class="achievement-callout right-callout"
@@ -541,6 +575,8 @@
   <div id="custom-cursor"     aria-hidden="true"></div>
   <div id="sparkle-container" aria-hidden="true"></div>
 
+  </div><!-- /#site-content -->
+
   <script>
     "use strict";
 
@@ -839,6 +875,185 @@
           if (el.parentNode) { el.parentNode.removeChild(el); }
         }, 650);
       }
+
+    })();
+
+    /* ========================================================
+       10. FULL-SCREEN LOADER — 10-second experience
+           + Navbar logo replay trigger
+    ======================================================== */
+
+    (function initLoader() {
+
+      var LOADER_DURATION = 10000; /* ms — total visible time */
+      var FADE_OUT_MS     = 600;
+      var FADE_IN_MS      = 800;
+
+      var loader     = document.getElementById("site-loader");
+      var fill       = document.getElementById("loader-bar-fill");
+      var percentEl  = document.getElementById("loader-percent");
+      var body       = document.body;
+
+      if (!loader || !fill || !percentEl) return;
+
+      /* ── Lock scrolling while loader is active ── */
+      body.style.overflow = "hidden";
+
+      /* ── Collect all assets to preload ── */
+      function collectAssets() {
+        var imgs    = Array.from(document.querySelectorAll("img[src]")).map(function(el){ return el.src; });
+        var bgEls   = Array.from(document.querySelectorAll("[style*='background-image']"));
+        var bgUrls  = bgEls.map(function(el){
+          var m = el.style.backgroundImage.match(/url\(["']?([^"')]+)["']?\)/);
+          return m ? m[1] : null;
+        }).filter(Boolean);
+        var videos  = Array.from(document.querySelectorAll("video[src]")).map(function(el){ return el.src; });
+        return imgs.concat(bgUrls).concat(videos);
+      }
+
+      /* ── Preload an image/video URL → resolves when done ── */
+      function preloadAsset(url) {
+        return new Promise(function(resolve) {
+          var ext = url.split("?")[0].split(".").pop().toLowerCase();
+          if (["mp4","webm","ogg"].indexOf(ext) !== -1) {
+            var vid = document.createElement("video");
+            vid.preload = "metadata";
+            vid.oncanplaythrough = vid.onerror = resolve;
+            vid.src = url;
+          } else {
+            var img = new Image();
+            img.onload = img.onerror = resolve;
+            img.src = url;
+          }
+          /* Safety: resolve after 8 s regardless */
+          setTimeout(resolve, 8000);
+        });
+      }
+
+      /* ── Animate progress bar ── */
+      function animateProgress(startTime, startPct, targetPct, duration, onComplete) {
+        function tick() {
+          var elapsed  = Date.now() - startTime;
+          var t        = Math.min(elapsed / duration, 1);
+          /* ease-in-out cubic */
+          var eased    = t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+          var current  = startPct + (targetPct - startPct) * eased;
+          var pct      = Math.round(current);
+
+          fill.style.width       = current + "%";
+          percentEl.textContent  = pct + "%";
+
+          if (t < 1) {
+            requestAnimationFrame(tick);
+          } else {
+            if (onComplete) onComplete();
+          }
+        }
+        requestAnimationFrame(tick);
+      }
+
+      /* ── Reveal website after loader ── */
+      function revealSite() {
+        /* Ensure percent shows 100 */
+        fill.style.width      = "100%";
+        percentEl.textContent = "100%";
+
+        /* Small pause at 100% before fade */
+        setTimeout(function() {
+
+          /* Fade out loader */
+          loader.style.transition = "opacity " + (FADE_OUT_MS / 1000) + "s ease";
+          loader.style.opacity    = "0";
+          loader.setAttribute("aria-hidden", "true");
+
+          setTimeout(function() {
+            /* Remove from DOM, re-enable scroll */
+            loader.style.display = "none";
+            loader.inert         = true;
+            body.style.overflow  = "";
+
+            /* Reset scroll to top */
+            window.scrollTo({ top: 0, behavior: "instant" });
+
+            /* Fade in main content */
+            var siteContent = document.getElementById("site-content");
+            if (siteContent) {
+              siteContent.style.transition = "opacity " + (FADE_IN_MS / 1000) + "s ease";
+              siteContent.style.opacity    = "1";
+            }
+
+          }, FADE_OUT_MS);
+
+        }, 250);
+      }
+
+      /* ── Main loader sequence ── */
+      function runLoader() {
+        var loaderStart = Date.now();
+        var assets      = collectAssets();
+
+        /* Phase 1: 0→60% while preloading assets */
+        animateProgress(loaderStart, 0, 60, LOADER_DURATION * 0.6, null);
+
+        /* Preload all assets */
+        var fontReady   = document.fonts ? document.fonts.ready : Promise.resolve();
+        var assetsDone  = Promise.all(assets.map(preloadAsset));
+
+        Promise.all([fontReady, assetsDone]).then(function() {
+          /* Phase 2: 60→100% for remaining time */
+          var elapsed   = Date.now() - loaderStart;
+          var remaining = Math.max(LOADER_DURATION - elapsed, 500);
+
+          animateProgress(Date.now(), 60, 100, remaining, function() {
+            /* Ensure minimum duration is met */
+            var totalElapsed = Date.now() - loaderStart;
+            var wait         = Math.max(LOADER_DURATION - totalElapsed, 0);
+            setTimeout(revealSite, wait);
+          });
+        });
+      }
+
+      /* ── Wrap site content for fade-in ── */
+      function wrapSiteContent() {
+        var siteContent = document.getElementById("site-content");
+        if (siteContent) {
+          siteContent.style.opacity = "0";
+        }
+      }
+
+      /* ── Logo reload trigger ── */
+      var navLogo = document.getElementById("navbar-logo");
+
+      function replayLoader() {
+        /* Instantly show loader, then hard-reload the page.
+           The loader is visible during the brief reload delay,
+           making the transition feel seamless. */
+        body.style.overflow     = "hidden";
+        fill.style.transition   = "none";
+        fill.style.width        = "0%";
+        percentEl.textContent   = "0%";
+        loader.style.transition = "none";
+        loader.style.opacity    = "1";
+        loader.style.display    = "flex";
+        loader.removeAttribute("aria-hidden");
+        loader.inert            = false;
+
+        setTimeout(function() { window.location.reload(); }, 80);
+      }
+
+      if (navLogo) {
+        navLogo.addEventListener("click", replayLoader);
+        navLogo.addEventListener("keydown", function(e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            replayLoader();
+          }
+        });
+      }
+
+      /* ── Init ── */
+      wrapSiteContent();
+      runLoader();
 
     })();
   
