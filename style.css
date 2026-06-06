@@ -32,7 +32,7 @@
   --page-x:     1.25rem;    /* mobile → 20px; prevents content kissing screen edges */
 
   /* Colours */
-  --clr-bg:         #090909;
+  --clr-bg:         #000000;
   --clr-surface:    #111111;
   --clr-border:     #222222;
   --clr-text:       #ffffff;
@@ -240,7 +240,7 @@ img{
   /* svh = "small viewport height" — avoids the mobile browser-chrome bug */
   /* 100svh excludes mobile browser chrome so hero truly fills the screen */
   min-height:100svh;
-  background:url("../assets/images/heroImg.png") center/contain no-repeat;
+  background:url("../assets/images/heroImg2.png") center/contain no-repeat;
   display:flex;
   /* flex-end keeps overlay text anchored at the bottom of the hero image */
   align-items:flex-end;
@@ -1095,7 +1095,7 @@ section{
   position:relative;
   width:100%;
   max-width:100%;
-  margin-top:var(--space-lg);
+  margin-top:var(--space-md);
   opacity:0;
   transform:translateY(20px);
   transition:opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
