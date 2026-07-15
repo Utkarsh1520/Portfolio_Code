@@ -41,6 +41,8 @@
   --clr-accent:     #78aaff;   /* 6.5 : 1 on --clr-bg — WCAG AA ✓ */
   --clr-accent-hi:  #9ec5ff;   /* 7.7 : 1 on --clr-bg — WCAG AA ✓ */
   --clr-accent-sub: #8ab6ff;   /* 6.5 : 1 on --clr-bg — WCAG AA ✓ */
+  --badge-bg: rgba(255,255,255,0.16);
+  --badge-border: rgba(255,255,255,0.36);
 
   /* Glow colours */
   --glow-blue:   rgba(120,170,255,0.6);
@@ -243,40 +245,127 @@ img{
   background:url("../assets/images/heroImg2.png") center/contain no-repeat;
   display:flex;
   /* flex-end keeps overlay text anchored at the bottom of the hero image */
-  align-items:flex-end;
+  /* align-items:flex-end; */
   justify-content:center;
   overflow:hidden;
 }
 
-.hero-overlay{
-  position:relative;
+/* ============================================================
+   HERO METRIC LINE (rotating typewriter)
+   Mobile: stacks number above label if the line can't fit;
+   number/label sit inline once there's room (sm+).
+============================================================ */
+
+/* Row wrapping the badge icon + metric line — icon sits to the left
+   from ~413px up; stacks vertically below that (see media query below) */
+.metric-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0.5rem;
+  margin-top:0.75rem;
   width:100%;
+  flex-wrap:wrap;
+}
+
+/* Narrow phones (≤412px): icon on top, number + label stacked below it,
+   full width so the label wraps cleanly instead of clipping */
+@media(max-width:412px){
+  .metric-row{
+    flex-direction:column;
+    gap:0.375rem;
+  }
+
+  .metric-line{
+    width:100%;
+  }
+}
+
+/* Static badge icon — intentionally has no animation/transition so
+   it stays fixed while the text beside it cycles through the
+   typewriter effect. */
+.metric-badge-icon{
+  flex-shrink:0;
+}
+
+.metric-line{
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
+  gap:0.375rem;
+  min-height:2.75rem;   /* reserves space so layout doesn't jump while typing */
+  min-width:0;
+  max-width:100%;
+  text-align:center;
+}
+
+@media(min-width:30rem){
+  .metric-line{
+    flex-direction:row;
+    gap:0.625rem;
+  }
+}
+
+.metric-number{
+  font-family:'Inter',sans-serif;
+  font-weight:800;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+.metric-label{
+  color:var(--clr-text-muted);
+  font-size:clamp(0.85rem, 2vw, 1rem);
+  line-height:1.5;
+  /* Flex items default to a min-width equal to their content's width,
+     which was pushing this past the viewport edge and getting clipped
+     by body{overflow-x:hidden}. min-width:0 lets it actually wrap. */
+  min-width:0;
+  max-width:100%;
+  overflow-wrap:break-word;
+}
+
+.hero-overlay{
+  position:relative;
+  margin-top:var(--space-md);
+  gap:1.25rem;
+  width:90%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
   text-align:center;
   /* Mobile: top clears the fixed navbar; generous bottom so text isn't
      flush against the viewport edge on small screens */
-  padding:calc(var(--nav-h) + var(--space-md)) var(--page-x) var(--space-xl);
+  padding:calc(var(--nav-h) + var(--space-sm)) var(--page-x) var(--space-lg);
+}
+
+/* md+: restore the larger, more cinematic gap now that there's room */
+@media(min-width:48rem){
+  .hero-overlay{
+    margin-top:var(--space-xl);
+    gap:2rem;
+  }
 }
 
 /* Tablet: intermediate breathing room */
 @media(min-width:48rem) and (max-width:63.99rem){
   .hero-overlay{
-    padding:var(--space-2xl) 2.5rem var(--space-2xl);
+    padding:var(--space-2xl) 2.5rem var(--space-l);
   }
 }
 
 @media(min-width:64rem){
   .hero-overlay{
-    padding:var(--space-3xl) var(--space-lg) var(--space-2xl);
+    padding:var(--space-3xl) var(--space-lg) var(--space-l);
   }
 }
 
 /* clamp() → fluid heading that needs zero breakpoint overrides */
 .hero h1{
   font-size:clamp(2rem, 6vw, 4rem);
+  text-transform: uppercase;
   font-weight:700;
   line-height:1.15;
   text-align:center;
@@ -291,11 +380,10 @@ img{
   flex-direction:column;
   gap:var(--space-sm);
   color:var(--clr-text);
-  font-size:clamp(1rem, 2.5vw, 2rem);
+  font-size:clamp(1rem, 2.5vw, 1.5rem);
   line-height:1.5;
   font-weight:500;
   text-align:center;
-  margin-bottom:var(--space-sm);
 }
 
 @media(min-width:48rem){
@@ -305,68 +393,12 @@ img{
   }
 }
 
-
-/* ============================================================
-   DYNAMIC WORD ANIMATION
-============================================================ */
-
-.dynamic-word{
-  position:relative;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  /* Mobile: no fixed min-width — prevents overflow on narrow screens */
-  min-width:auto;
-  color:var(--clr-text);
-  font-weight:700;
-  letter-spacing:0.04em;
-  text-shadow:
-    0 0 10px var(--glow-blue),
-    0 0 24px var(--glow-purple);
-  opacity:1;
-  transform:translateY(0);
-  transition:opacity 0.5s var(--ease), transform 0.5s var(--ease), filter 0.5s var(--ease);
-}
-
-/* md+: restore the fixed minimum width for the animation */
-@media(min-width:48rem){
-  .dynamic-word{
-    min-width:6.75rem;
-  }
-}
-
-.dynamic-word.fade-out{
-  opacity:0;
-  transform:translateY(10px);
-  filter:blur(5px);
-}
-
-.dynamic-word.fade-in{
-  opacity:1;
-  transform:translateY(0);
-  filter:blur(0);
-}
-
-.dynamic-word::after{
-  content:"";
-  position:absolute;
-  left:0;
-  bottom:-6px;
-  width:100%;
-  height:2px;
-  border-radius:999px;
-  background:linear-gradient(
-    90deg,
-    rgba(120,170,255,0),
-    var(--clr-text),
-    rgba(180,120,255,0)
-  );
-  animation:glowPulse 3s ease-in-out infinite;
-}
-
-@keyframes glowPulse{
-  0%,100%{ opacity:0.4; transform:scaleX(0.92); }
-  50%{     opacity:1;   transform:scaleX(1); }
+/* Hero body copy — fluid size, smaller on phones so the hero doesn't
+   feel overloaded before the metric line even shows */
+.hero-description{
+  font-size:clamp(1rem, 3vw, 1.5rem);
+  line-height:1.5;
+  max-width:34rem;
 }
 
 
@@ -415,46 +447,36 @@ section{
   height:auto;   /* was 100% — preserves aspect ratio on mobile */
 }
 
+/* Narrow phones (≤412px): force the icon → number → label stack,
+   and give #label a guaranteed full-width, block-level box so long
+   text wraps instead of getting clipped by overflow-x:hidden */
+@media (max-width: 436px) {
 
-/* ============================================================
-   INTRO
-   Mobile: single column (image stacked above text).
-   lg+: 1/3 – 2/3 side-by-side grid.
-============================================================ */
-
-.intro-content{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:var(--space-md);
-  align-items:center;
-}
-
-/* Tablet: still single-column but with extra gap for breathing room */
-@media(min-width:48rem) and (max-width:63.99rem){
-  .intro-content{
-    gap:var(--space-xl);
+  .metric-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
   }
-}
 
-@media(min-width:64rem){
-  .intro-content{
-    grid-template-columns:1fr 2fr;
-    gap:var(--space-xl);
+  .metric-line {
+    flex-direction: column;
+    width: 100%;
   }
-}
 
-.intro-brand img{
-  width:100%;
-  border-radius:var(--radius-lg);
-  border:4px solid var(--clr-text);
-}
+  #number {
+    display: block;
+  }
 
-/* WCAG AAA: #bbb on #090909 ≈ 7.5 : 1 */
-.intro-text ul{
-  display:flex;
-  flex-direction:column;
-  gap:0.9375rem;
-  color:var(--clr-text-soft);
+  #label {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    text-align: center;
+  }
 }
 
 
@@ -462,34 +484,6 @@ section{
    PHILOSOPHY GRID
    Mobile → sm: 1 col → 2 col → lg: 4 col.
 ============================================================ */
-
-.philosophy-grid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:var(--space-sm);
-}
-
-/* sm: 2 columns on wider phones */
-@media(min-width:30rem){
-  .philosophy-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-/* md (tablet): 3 columns — avoids the jarring 2→4 jump */
-@media(min-width:48rem){
-  .philosophy-grid{
-    grid-template-columns:repeat(3,1fr);
-  }
-}
-
-/* lg+: full 4-column desktop layout */
-@media(min-width:64rem){
-  .philosophy-grid{
-    grid-template-columns:repeat(4,1fr);
-    gap:var(--space-md);
-  }
-}
 
 /* Mobile: show image2 (portrait/compact variant), hide image1 */
 .image1{ display:none; }
@@ -501,29 +495,6 @@ section{
   .image2{ display:none; }
 }
 
-
-.philosophy-card{
-  background:var(--clr-surface);
-  border:1px solid var(--clr-border);
-  padding:var(--space-sm);
-  border-radius:var(--radius-sm);
-  transition:transform var(--dur-base) var(--ease), border-color var(--dur-base) var(--ease);
-}
-
-.philosophy-card:hover{
-  transform:translateY(-6px);
-  border-color:var(--clr-accent);
-}
-
-.philosophy-card:focus-visible{
-  outline:2px solid var(--clr-accent);
-  outline-offset:3px;
-}
-
-.philosophy-card img{
-  width:100%;
-  margin-top:var(--space-sm);
-}
 
 .philosophy-fade-in-show{
   margin-top:var(--space-lg);
@@ -547,30 +518,13 @@ section{
   margin:0 auto;
 }
 
-.section-heading {
-  text-align: center;
-  margin-bottom: 60px;
-}
-
-.label {
-  color: rgba(255,255,255,0.45);
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-size: 0.8rem;
-  margin-bottom: 14px;
-}
-
-.section-heading h1 {
-  /* was clamp(3rem,7vw,5rem) — 3rem minimum is too large on phones */
-  font-size: clamp(1.75rem, 5vw, 3rem);
-  line-height: 1.1;
-  font-weight: 800;
-}
-
-.subtitle {
-  margin-top: 14px;
-  color: rgba(255,255,255,0.6);
-  font-size: 0.95rem;                     /* was 1.1rem */
+.hero-overlay h1 .highlight {
+  background: #fff; /* yellow */
+  color: #0a0a0a;       /* near-black text */
+  padding: 4px 12px;
+  display: inline-block;
+  border-radius: 2px;   /* near-zero, just softens corners slightly */
+  line-height: 1;
 }
 
 /* ── Card shell ─────────────────────────────────────────── */
@@ -783,90 +737,6 @@ section{
 
 
 /* ============================================================
-   PROJECTS
-============================================================ */
-
-.projects-grid{
-  margin-top:var(--space-md);
-  display:flex;
-  flex-direction:column;
-  gap:var(--space-md);
-}
-
-.project-card{
-  background:var(--clr-surface);
-  overflow:hidden;
-  border-radius:var(--radius-md);
-  border:1px solid var(--clr-border);
-  transition:transform var(--dur-base) var(--ease);
-}
-
-.project-card:hover{
-  /* Reduced from -10px — less jarring on mobile */
-  transform:translateY(-6px);
-}
-
-@media(min-width:48rem){
-  .project-card:hover{
-    transform:translateY(-10px);
-  }
-}
-
-.project-card img{
-  width:100%;
-}
-
-.project-content{
-  padding:var(--space-md);
-}
-
-.project-content h3{
-  margin-bottom:0.625rem;
-  font-size:1.1rem;
-  font-weight:600;
-}
-
-.project-content p{
-  color:var(--clr-text-muted);
-  line-height:1.7;
-}
-
-.portfolio-links{
-  margin-top:var(--space-lg);
-  display:flex;
-  /* Mobile: links wrap rather than overflow */
-  flex-wrap:wrap;
-  gap:var(--space-sm);
-}
-
-@media(min-width:48rem){
-  .portfolio-links{
-    flex-wrap:nowrap;
-    gap:var(--space-md);
-  }
-}
-
-.portfolio-links a{
-  color:var(--clr-accent);
-  text-decoration:none;
-  display:inline-flex;
-  align-items:center;
-  min-height:var(--tap-min);
-  transition:color var(--dur-fast) var(--ease), text-decoration var(--dur-fast) var(--ease);
-}
-
-.portfolio-links a:hover{
-  text-decoration:underline;
-}
-
-.portfolio-links a:focus-visible{
-  outline:2px solid var(--clr-accent);
-  outline-offset:4px;
-  border-radius:4px;
-}
-
-
-/* ============================================================
    SYSTEMS SECTION
    Mobile: single-column, reduced padding.
    lg+: 2-column grid, cinematic spacing.
@@ -1071,91 +941,6 @@ section{
 
 
 /* ============================================================
-   ACHIEVEMENT CALLOUTS
-   Mobile: removed from absolute flow — stacked as block elements.
-   lg+: absolutely positioned over the hero (cinematic layout).
-============================================================ */
-
-.achievement-callout{
-  display:flex;
-  align-items:center;
-  /* flex-start keeps arrow + text naturally left-aligned on mobile */
-  justify-content:center;
-  gap:var(--space-sm);
-  padding:var(--space-sm) var(--space-md);
-  border-radius:var(--radius-md);
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  backdrop-filter:blur(12px);
-  color:var(--clr-text);
-  font-size:0.95rem;
-  line-height:1.6;
-  box-shadow:0 0 40px rgba(120,170,255,0.08);
-  /* Mobile: visible, full-width, in normal flow */
-  position:relative;
-  width:100%;
-  max-width:100%;
-  margin-top:var(--space-md);
-  opacity:0;
-  transform:translateY(20px);
-  transition:opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
-}
-
-.achievement-callout p{
-  margin:0;
-  /* Fluid font — readable on all screens, no breakpoint hacks needed */
-  font-size:clamp(0.875rem, 1.5vw, 1rem);
-  text-align:center;
-  color:rgba(255,255,255,0.92);
-}
-
-.achievement-callout.show{
-  opacity:1;
-  transform:translateY(0);
-}
-
-/* Mobile: both callouts arrow in the same direction */
-.right-callout{
-  flex-direction:row;
-}
-
-/* lg+: restore absolute overlay layout for cinematic positioning */
-@media(min-width:64rem){
-  .achievement-callout{
-    position:absolute;
-    max-width:16.25rem;
-    width:auto;
-    margin-top:0;
-  }
-
-  .left-callout{
-    top:96%;
-    left:76%;
-  }
-
-  .right-callout{
-    top:86%;
-    right:76%;
-    flex-direction:row-reverse;
-  }
-}
-
-/* Between lg and xl: prevent callouts clipping near viewport edges */
-@media(min-width:64rem) and (max-width:80rem){
-  .left-callout{ left:6%; }
-  .right-callout{ right:6%; }
-}
-
-/* WCAG AA: #9ec5ff on dark bg ≈ 7.7 : 1 */
-.achievement-callout strong{
-  color:var(--clr-accent-hi);
-  text-shadow:0 0 10px rgba(120,170,255,0.45);
-}
-
-/* .callout-arrow styles removed — element not currently in use */
-
-
-/* ============================================================
    TOOLTIP
 ============================================================ */
 
@@ -1215,25 +1000,6 @@ section{
   border-radius:var(--radius-md);
 }
 
-.tools{
-  display:flex;
-  gap:var(--space-xs);
-  margin:var(--space-md) 0;
-  flex-wrap:wrap;
-}
-
-.tools span{
-  padding:0.5rem 1rem;
-  border:1px solid #333;
-  border-radius:2.5rem;
-  background:var(--clr-surface);
-  font-size:0.9rem;
-  /* Meet tap target on mobile */
-  min-height:var(--tap-min);
-  display:inline-flex;
-  align-items:center;
-}
-
 .making-text{
   color:var(--clr-text-muted);
   /* min-width:0 prevents this grid cell from overflowing its column
@@ -1241,17 +1007,6 @@ section{
   min-width:0;
   overflow:hidden;
 }
-
-.making-subsection{
-  margin-top:var(--space-lg);
-}
-
-.making-subsection h3{
-  margin-bottom:0.625rem;
-  font-size:1rem;
-  font-weight:600;
-}
-
 
 /* ============================================================
    GALLERY
@@ -1641,85 +1396,13 @@ section{
 
 
 /* ============================================================
-   FLOW DIAGRAM
-   Mobile: vertical flow. lg+: horizontal flow restored.
-============================================================ */
-
-.horizontal-flow{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
-.flow-svg{
-  width:20px;
-  height:90px;
-}
-
-.flow-path{
-  stroke-dasharray:120;
-  stroke-dashoffset:120;
-}
-
-.system-node,
-.node{
-  width:100%;
-  text-align:center;
-}
-
-.diagram-card{
-  min-height:auto;
-}
-
-.systems-panel.active .horizontal,
-.diagram-card.active .horizontal{
-  width:80px;
-}
-
-@media(min-width:64rem){
-  .horizontal-flow{
-    flex-direction:row;
-  }
-
-  .flow-svg{
-    width:90px;
-    height:20px;
-  }
-
-  .system-node,
-  .node{
-    width:auto;
-    text-align:left;
-  }
-}
-
-
-/* ============================================================
-   THINKING GRID
-   Mobile: 1 col → sm: 2 col → lg: 2 col (design intent).
-============================================================ */
-
-.thinking-grid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:var(--space-sm);
-}
-
-@media(min-width:30rem){
-  .thinking-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-
-/* ============================================================
    SCROLL CUE (decorative)
 ============================================================ */
 
 .scroll-cue{
   position:absolute;
-  /* Mobile: low enough to be visible without overlapping hero content */
-  bottom:2rem;
+  /* Mobile: anchored near the bottom of the hero, clear of the metric line */
+  bottom:1.5rem;
   left:50%;
   transform:translateX(-50%);
   display:flex;
@@ -1733,7 +1416,7 @@ section{
 
 @media(min-width:48rem){
   .scroll-cue{
-    bottom:3rem;
+    bottom:-6rem;
   }
 }
 
@@ -1934,7 +1617,6 @@ section{
      so no content is trapped behind opacity:0 */
   .systems-title,
   .systems-panel,
-  .achievement-callout,
   .fade-in{
     opacity:1 !important;
     transform:none !important;
@@ -1996,41 +1678,6 @@ section{
   gap: 2rem;
   width: min(480px, 88vw);
   text-align: center;
-}
-
-/* ── Monogram logo mark ── */
-.loader-logo {
-  width: 64px;
-  height: 64px;
-  border: 1px solid rgba(120, 170, 255, 0.25);
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  animation: loader-logo-pulse 3s ease-in-out infinite;
-}
-
-.loader-logo::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: 15px;
-  background: linear-gradient(135deg, rgba(120,170,255,0.18) 0%, transparent 60%);
-  pointer-events: none;
-}
-
-.loader-logo-text {
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: 1.1rem;
-  letter-spacing: 0.12em;
-  color: var(--clr-accent, #78aaff);
-}
-
-@keyframes loader-logo-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(120,170,255,0); }
-  50%       { box-shadow: 0 0 24px 4px rgba(120,170,255,0.12); }
 }
 
 /* ── Headline text ── */
@@ -2121,7 +1768,6 @@ section{
 
 /* ── Reduced motion: no shimmer, no pulse ── */
 @media (prefers-reduced-motion: reduce) {
-  .loader-logo { animation: none; }
   .loader-bar-fill::after { animation: none; }
   .loader-headline,
   .loader-percent { animation: none; opacity: 1; transform: none; }
@@ -2130,6 +1776,4 @@ section{
 /* ── Mobile tweaks ── */
 @media (max-width: 480px) {
   .loader-inner { gap: 1.5rem; }
-  .loader-logo  { width: 52px; height: 52px; border-radius: 11px; }
-  .loader-logo-text { font-size: 0.95rem; }
 }

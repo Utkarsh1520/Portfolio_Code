@@ -118,38 +118,21 @@
 
     <div class="hero-overlay">
 
-      <h1>Directed by Utkarsh Prakash</h1>
+      <h2 class="hero-subtitle">Directed by Utkarsh Prakash</h2>
+      <h1>Every Product is a <span class="highlight">Story.</span><br>Every User Decision has a <span class="highlight">Reason.</span></h1>
+      <p class="hero-description">I design products by uncovering the invisible systems behind human behavior - not just creating beautiful interfaces.</p>
+    
+    <div class="metric-row">
+      <svg class="metric-badge-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="12" cy="8" r="5" fill="darkgoldenrod" fill-opacity="0.15" stroke="darkgoldenrod" stroke-width="1.4"/>
+        <path d="M9.3 12.6L7 20l5-2.4 5 2.4-2.3-7.4" stroke="darkgoldenrod" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 5.2c-1.6 0.6-2.6 1.9-2.8 3.6" stroke="darkgoldenrod" stroke-width="1.1" stroke-linecap="round" opacity="0.6"/>
+      </svg>
 
-      <h2>
-        A Product Growth Designer shaping systems that
-        <span
-          id="dynamic-word"
-          class="dynamic-word"
-          aria-live="polite"
-          aria-atomic="true"
-        >SCALE</span>
-      </h2>
-
-      <!-- Left callout -->
-      <div
-        class="achievement-callout left-callout"
-        aria-label="Designed systems impacting 100 plus users and multiple teams"
-      >
-        <p>
-          Designed systems impacting
-          <strong>100+ users</strong> &amp <strong>3–4</strong> multiple cleint teams
-        </p>
+      <div class="metric-line">
+        <span class="metric-number" id="number" style="font-size: 24px; font-weight: 800; color:darkgoldenrod"></span>
+        <span class="metric-label" id="label"></span>
       </div>
-      <!-- Right callout -->
-      <div
-        class="achievement-callout right-callout"
-        aria-label="Increased user activation across multi-step flows"
-      >
-        <p>
-          Increased user activation by <strong>5%</strong> across multi-step flows
-        </p>
-      </div>
-
     </div>
 
     <!-- Scroll cue -->
@@ -584,6 +567,77 @@
   </div><!-- /#site-content -->
 
   <script>
+    const metrics = [
+    { number: "100+", label: "Users Impacted Across 3–4 Client Teams" },
+    { number: "+5%", label: "Activation Lift Across A Multi-Step Onboarding Flow" },
+    { number: "3-tier", label: "Design System Token Architecture Shipped At Scale" },
+    { number: "2+", label: "Enterprise Product Suites Redesigned End-To-End" }
+  ];
+ 
+  const numberEl = document.getElementById('number');
+  const labelEl = document.getElementById('label');
+ 
+  const TYPE_SPEED = 20;
+  const DELETE_SPEED = 20;
+  const HOLD_TIME = 1800;
+  const GAP_TIME = 300;
+ 
+  let metricIndex = 0;
+ 
+  function typeText(el, text, speed, callback) {
+    let i = 0;
+    (function step() {
+      if (i <= text.length) {
+        el.textContent = text.slice(0, i);
+        i++;
+        setTimeout(step, speed);
+      } else if (callback) {
+        callback();
+      }
+    })();
+  }
+ 
+  function deleteText(el, speed, callback) {
+    let text = el.textContent;
+    (function step() {
+      if (text.length > 0) {
+        text = text.slice(0, -1);
+        el.textContent = text;
+        setTimeout(step, speed);
+      } else if (callback) {
+        callback();
+      }
+    })();
+  }
+ 
+  function cycle() {
+    const current = metrics[metricIndex];
+ 
+    typeText(numberEl, current.number, TYPE_SPEED, () => {
+      typeText(labelEl, current.label, TYPE_SPEED, () => {
+        setTimeout(() => {
+          deleteText(labelEl, DELETE_SPEED, () => {
+            deleteText(numberEl, DELETE_SPEED, () => {
+              metricIndex = (metricIndex + 1) % metrics.length;
+              setTimeout(cycle, GAP_TIME);
+            });
+          });
+        }, HOLD_TIME);
+      });
+    });
+  }
+ 
+  // start once visible
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        cycle();
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+ 
+  observer.observe(document.querySelector('.metric-line'));
     "use strict";
 
     /* ========================================================
@@ -616,45 +670,6 @@
         }
       });
     }
-
-    /* ========================================================
-       2. DYNAMIC HERO WORD ROTATION
-    ======================================================== */
-
-    var words      = ["SCALE", "ADAPT", "CONVERT"];
-    var wordEl     = document.getElementById("dynamic-word");
-    var wordIndex  = 0;
-
-    if (wordEl) {
-      function changeWord() {
-        wordEl.classList.add("fade-out");
-
-        setTimeout(function () {
-          wordIndex = (wordIndex + 1) % words.length;
-          wordEl.textContent = words[wordIndex];
-          wordEl.classList.remove("fade-out");
-          wordEl.classList.add("fade-in");
-
-          setTimeout(function () {
-            wordEl.classList.remove("fade-in");
-          }, 500);
-        }, 500);
-      }
-
-      setInterval(changeWord, 2500);
-    }
-
-    /* ========================================================
-       3. ACHIEVEMENT CALLOUT REVEAL
-    ======================================================== */
-
-    window.addEventListener("load", function () {
-      document.querySelectorAll(".achievement-callout").forEach(function (callout, i) {
-        setTimeout(function () {
-          callout.classList.add("show");
-        }, i * 400 + 300);
-      });
-    });
 
     /* ========================================================
        4. FADE-IN SCROLL OBSERVER
@@ -885,13 +900,13 @@
     })();
 
     /* ========================================================
-       10. FULL-SCREEN LOADER — 10-second experience
+       10. FULL-SCREEN LOADER — 3-second experience
            + Navbar logo replay trigger
     ======================================================== */
 
     (function initLoader() {
 
-      var LOADER_DURATION = 10000; /* ms — total visible time */
+      var LOADER_DURATION = 3000; /* ms — total visible time */
       var FADE_OUT_MS     = 600;
       var FADE_IN_MS      = 800;
 
