@@ -239,6 +239,7 @@ img{
 
 .hero{
   position:relative;
+  background: none;
   /* svh = "small viewport height" — avoids the mobile browser-chrome bug */
   /* 100svh excludes mobile browser chrome so hero truly fills the screen */
   min-height:100svh;
@@ -248,6 +249,23 @@ img{
   /* align-items:flex-end; */
   justify-content:center;
   overflow:hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100svh;
+  background: url("../assets/images/heroImg2.png") center/contain no-repeat;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-overlay {
+  position: relative;
+  z-index: 1;
 }
 
 /* ============================================================
@@ -324,6 +342,17 @@ img{
   min-width:0;
   max-width:100%;
   overflow-wrap:break-word;
+}
+
+#label {
+  min-height: 3rem;   /* enough for 2 wrapped lines at this font-size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metric-line {
+  min-height: 5.5rem;  /* number line + reserved label height, locked */
 }
 
 .hero-overlay{
@@ -1417,6 +1446,16 @@ section{
 @media(min-width:48rem){
   .scroll-cue{
     bottom:-6rem;
+  }
+}
+
+@media (max-width: 412px) {
+  .scroll-cue {
+    position: static;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    margin-bottom: 1rem;
   }
 }
 
